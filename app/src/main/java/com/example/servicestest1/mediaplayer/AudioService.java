@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
+import android.widget.Button;
+import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -84,24 +86,34 @@ public class AudioService extends Service {
     }
 
     private Notification buildNotification() {
+        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.service_media_player);
+        remoteViews.setOnClickPendingIntent(R.id.iv_pause, getPendingIntentForAction("pause"));
+        remoteViews.setOnClickPendingIntent(R.id.iv_stop, getPendingIntentForAction("stop"));
+
         Intent stopIntent = new Intent(this, AudioService.class);
         stopIntent.setAction(ACTION_STOP);
         PendingIntent stopPendingIntent = PendingIntent.getService(this, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "default")
-                .setContentTitle("Audio is playing")
-                .setSmallIcon(R.drawable.ic_audio)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "channel_id")
+//                .setContentTitle("Audio is playing")
+                .setCustomContentView(remoteViews)
+//                .setSmallIcon(R.drawable.ic_audio)
                 .setContentIntent(stopPendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setOngoing(true)
-                .addAction(R.drawable.ic_stop, "Stop", stopPendingIntent);
-
-//        NotificationChannel channel = new NotificationChannel("default", "Audio",NotificationManager.IMPORTANCE_DEFAULT);
-//        channel.setDescription("Notification Description");
-//
-//        notificationManager = getSystemService(NotificationManager.class);
-//        notificationManager.createNotificationChannel(channel);
+//                .addAction(R.drawable.ic_stop, "Stop", stopPendingIntent)
+                ;
 
         return builder.build();
+    }
+
+    private PendingIntent getPendingIntentForAction(String action) {
+        Intent intent = new Intent(this, AudioService.class);
+        intent.setAction(action);
+        return PendingIntent.getService(
+                this,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
     }
 }
