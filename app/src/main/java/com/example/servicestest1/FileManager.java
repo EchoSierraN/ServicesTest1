@@ -1,10 +1,7 @@
 package com.example.servicestest1;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
@@ -21,23 +18,14 @@ import android.widget.Toast;
 
 import com.example.servicestest1.adapters.FileManagerAdapter;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 public class FileManager extends AppCompatActivity {
     private static final int READ_STORAGE_PERMISSION_REQUEST_CODE = 41;
     private static final int REQUEST_CODE_OPEN_DIRECTORY = 100;
-
-    private RecyclerView rvExplorer;
-    private FileManagerAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_manager);
-
-        rvExplorer = findViewById(R.id.rv_explorer);
 
         if (!checkPermissionForReadExtertalStorage(this)) {
             Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
@@ -48,9 +36,6 @@ public class FileManager extends AppCompatActivity {
             }
         } else {
             Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
-//            List<File> files = getListOfFiles(); // Get list of files and folders
-//            mAdapter = new FileManagerAdapter(this, files);
-//            rvExplorer.setAdapter(mAdapter);
             openDirectoryPicker();
         }
 
@@ -64,7 +49,7 @@ public class FileManager extends AppCompatActivity {
         return false;
     }
 
-    public void requestPermissionForReadExtertalStorage(Context context) throws Exception {
+    public void requestPermissionForReadExtertalStorage(Context context) {
         try {
             ActivityCompat.requestPermissions(
                     (Activity) context,
@@ -75,35 +60,6 @@ public class FileManager extends AppCompatActivity {
             e.printStackTrace();
             throw e;
         }
-    }
-
-    private List<File> getListOfFiles() {
-        List<File> _files = new ArrayList<>();
-//        String path = Environment.getExternalStorageDirectory().toString();
-//        File directory = new File(path);
-//        File[] fileList = directory.listFiles();
-//        if (fileList != null) {
-//            for (File file : fileList) {
-//                Log.d("files", "file:" + file.getName());
-//                files.add(file);
-//            }
-//        }
-//        return files;
-
-        File picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        if (picturesDirectory.exists() && picturesDirectory.isDirectory()) {
-            File[] files = picturesDirectory.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    Log.d("files", "File/Folder Name: " + file.getName());
-                    _files.add(file);
-                }
-            }
-        } else {
-            Log.e("files", "Pictures directory does not exist or is not a directory.");
-        }
-
-        return _files;
     }
 
     private void openDirectoryPicker() {
